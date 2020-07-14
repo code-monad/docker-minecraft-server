@@ -27,6 +27,24 @@ if [ ! -e /data/eula.txt ]; then
   fi
 fi
 
+if [[ $PASSWORDS_FILE ]]; then
+    if [ ! -e ${PASSWORDS_FILE} ]; then
+	log ""
+	log "Initial passwords file ${PASSWORDS_FILE} does not seems to exist."
+	log "Please ensure your configuration."
+    else
+	for LINE in $(cut -d= -f1 ${PASSWORDS_FILE}); do
+	    if [[ ${!LINE} ]]; then
+		log "${LINE} will be covered by values from password file"
+	    else
+		log "${LINE} would set by password file"
+	    fi
+	done
+	set -a
+	source ${PASSWORDS_FILE}
+	set +a
+    fi
+fi
 
 log "Running as uid=$(id -u) gid=$(id -g) with /data as '$(ls -lnd /data)'"
 
